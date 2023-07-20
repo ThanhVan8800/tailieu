@@ -1,0 +1,34 @@
+git config --global user.name "ThanhVan8800"
+
+git config --global user.gmail "thanh07345@gmail.com"
+
+git init khởi tạo git repo(kho)
+
+git status xem trang. thai'
+
+git add 'tên file'
+
+git commit -m "ghi nội dung commit" //file từ staging area -> commited
+
+git log trả về, ktra các thông tin đã thực hiện trước đó
+tiếp tạo repo (or push an existing repository from the command line)
+
+git remote add origin https://github.com/ThanhVan8800/Tutorial.git
+git branch -M main đổi tên từ master -> main
+git push -u origin main
+
+git branch tạo nhánh để làm việc của mình, lúc này đang ở main(master)
+
+git checkout -b tên-nhánh 
+sau khi code ở nhánh xong, git checkout main vẫn chưa có cần phải merge 
+git merge tên_nhánh_cần_gộp
+ví dụ đã add 1 file nhưng muốn quay lại:
+git restore --staged tên_file
+
+git push đẩy lên repo
+
+Xử lý CONFLICT(xung đột)
+git pull đưa source repo thay đổi về local -m "Resolve conflict"
+tạo file .gitignore để không đưa những file riêng của mình lên repo trong file 
+.gitignore chứa các file (...) 
+git clone link github tải toàn bộ về cd thư mục
