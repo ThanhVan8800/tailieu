@@ -1,0 +1,121 @@
+///
+<?php
+
+namespace App\Console\Commands;
+
+use Carbon\Carbon;
+use App\Models\User;
+use Illuminate\Console\Command;
+use App\Notifications\NotifyInactiveUser;
+
+class InactiveUser extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'email:inactiveUsers';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Send email to Inactive Users';
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
+        $limit = Carbon::now()->subDay(7);
+        $inactive_user = User::where('last_login', '<', $limit)->get();
+        foreach ($inactive_user as $user) {
+            $user->notify(new NotifyInactiveUser());
+        }
+    }
+}
+<?php
+
+namespace App\Console;
+
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+
+class Kernel extends ConsoleKernel
+{
+    /**
+     * Define the application's command schedule.
+     *
+     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @return void
+     */
+    protected $commands = [
+        Commands\InactiveUser::class,
+    ];
+    
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->command('email:inactiveUsers')
+        ->everyMinute();
+    }
+
+    /**
+     * Register the commands for the application.
+     *
+     * @return void
+     */
+    protected function commands()
+    {
+        $this->load(__DIR__.'/Commands');
+
+        require base_path('routes/console.php');
+    }
+}
+
+
+///////////////
+php artisan make:command ExpireVouchers
+
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use App\Models\Voucher;
+
+class ExpireVouchers extends Command
+{
+    protected $signature = 'vouchers:expire';
+    protected $description = 'Expire vouchers that have reached their expiration date';
+
+    public function handle()
+    {
+        // Expire vouchers logic
+        $expiredVouchers = Voucher::where('expiration_date', '<=', now())->get();
+
+        foreach ($expiredVouchers as $voucher) {
+            $voucher->expired = true;
+            $voucher->save();
+        }
+
+        $this->info('Expired vouchers have been updated.');
+    }
+}
+
+protected function schedule(Schedule $schedule)
+{
+    // Other scheduled commands...
+
+    $schedule->command('vouchers:expire')->daily();
+}
+
+
+* * * * * cd /path-to-your-laravel-project && php artisan schedule:run >> /dev/null 2>&1
