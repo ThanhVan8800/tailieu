@@ -4,3 +4,58 @@ Carbon::createFromFormat('Y-m-d H:i:s')
 
 $born = Carbon::createFromFormat('Y-m-d','2001-08-31');
 echo ($born->isBirthday())?'Birthday':"no";
+
+Elfinder
+composer require barryvdh/laravel-elfinder
+app.php
+Barryvdh\Elfinder\ElfinderServiceProvider::class
+
+php artisan elfinder:publish
+php artisan vendor:publish --provider='Barryvdh\Elfinder\ElfinderServiceProvider' --tag=config
+php artisan vendor:publish --provider='Barryvdh\Elfinder\ElfinderServiceProvider' --tag=views
+
+
+![image](https://github.com/ThanhVan8800/tailieu/assets/85359321/60a6e844-89ff-46fa-b0ce-f8f0e6285a15)
+
+donwload query ui ckeditor
+php artisan middleware UserUniqueFilesFolder kiểm tra sài cho từng người
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
+
+class UserUniqueFilesFolder
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function handle(Request $request, Closure $next)
+    {
+        if(Auth::check()){
+            $folder_name = 'my'.Auth::user()->id.'files';
+            if(!Storage::disk('public')->exists($folder_name)){
+                Storage::disk('public')->makeDirectory($folder_name,0755,true,true);
+            }
+            Config::set('elfinder.dir',["storage/$folder_name"]);
+        }
+        return $next($request);
+    }
+}
+
+ckeditor4.blade.php
+<script src="/jquery-ui-1.13.2/external/jquery/jquery.js"></script>
+        <script src="/jquery-ui-1.13.2/jquery-ui.min.js"></script>
+
+        <!-- elFinder CSS (REQUIRED) -->
+        <link rel="stylesheet" type="text/css" href="{{ asset($dir.'/css/elfinder.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset($dir.'/css/theme.css') }}">
