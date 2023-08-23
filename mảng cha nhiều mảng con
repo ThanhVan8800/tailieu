@@ -1,33 +1,28 @@
-  $data[] = [
-            [
-                "name"=> 'tin tuc',
-                'email'=> 'tuc@example.com',
-            ],[
-                'name'=> 'tin tuc',
-                'email'=> 'tuc@example.coms',
-            ]
-            ,[
-                'name'=> 'the thao',
-                'email'=> 'tuc@example.coms',
-            ],
+$categories = Category::with(['productCate', 'productCate.productDesc'])->get();
 
+$data = [];
+
+foreach ($categories as $category) {
+    $catId = $category->cat_id;
+
+    if (!isset($data[$catId])) {
+        $data[$catId] = [
+            'cat_id' => $catId,
+            'product' => [],
         ];
-      
-        $grouped = [];
+    }
 
-        foreach ($data as $item) {
-            foreach($item as $key => $val) {
-            $name = $val['name'];
-            
-            if (!isset($grouped[$name])) {
-                $grouped[$name] = [
-                    'name' => $name,
-                    'email' => [
-                        ['email' => $val['email']]
-                    ]
-                ];
-            } else {
-                $grouped[$name]['email'][] = ['email' => $val['email']];
-            }
-        }
-        }
+    foreach ($category->productCate as $productCate) {
+        $productId = $productCate->product_id;
+        $productName = isset($productCate->productDesc->title) ? $productCate->productDesc->title : '';
+
+        $data[$catId]['product'][] = [
+            'productID' => $productId,
+            'productName' => [
+                'name' => $productName,
+            ],
+        ];
+    }
+}
+
+$jsonData = json_encode(array_values($data));
