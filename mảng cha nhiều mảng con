@@ -1,0 +1,33 @@
+  $data[] = [
+            [
+                "name"=> 'tin tuc',
+                'email'=> 'tuc@example.com',
+            ],[
+                'name'=> 'tin tuc',
+                'email'=> 'tuc@example.coms',
+            ]
+            ,[
+                'name'=> 'the thao',
+                'email'=> 'tuc@example.coms',
+            ],
+
+        ];
+      
+        $grouped = [];
+
+        foreach ($data as $item) {
+            foreach($item as $key => $val) {
+            $name = $val['name'];
+            
+            if (!isset($grouped[$name])) {
+                $grouped[$name] = [
+                    'name' => $name,
+                    'email' => [
+                        ['email' => $val['email']]
+                    ]
+                ];
+            } else {
+                $grouped[$name]['email'][] = ['email' => $val['email']];
+            }
+        }
+        }
