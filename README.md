@@ -59,3 +59,10 @@ ckeditor4.blade.php
         <!-- elFinder CSS (REQUIRED) -->
         <link rel="stylesheet" type="text/css" href="{{ asset($dir.'/css/elfinder.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset($dir.'/css/theme.css') }}">
+
+
+
+
+        if (!File::exists(public_path($product->image))) {
+            $product->image = 'path/to/no-image.jpg'; // Replace 'path/to/no-image.jpg' with the path to your "no image" placeholder
+        }
