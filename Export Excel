@@ -1,0 +1,54 @@
+ProductController
+public function export(Request $request)
+{
+    $products = $request->input('products', []);
+
+    $export = new ProductExport($products);
+
+    return Excel::download($export, 'products.xlsx');
+}
+```
+
+In this method, we retrieve the imported product data from the request (`$request->input('products')`) and pass it to the `ProductExport` class. We then use the `Excel::download` method to generate and download the Excel file, using the `ProductExport` class as the data source.
+php artisan make:export ProductExport
+```
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Illuminate\Support\Collection;
+
+class ProductExport implements FromCollection, WithHeadings
+{
+    protected $products;
+
+    public function __construct($products)
+    {
+        $this->products = $products;
+    }
+
+    public function collection()
+    {
+        return new Collection($this->products);
+    }
+
+    public function headings(): array
+    {
+        // Define the column headings for the Excel file
+        return ['Product', 'Price', 'Brand'];
+    }
+}
+```
+
+In this example, we assume that the imported product data is passed as an array to the `ProductExport` class. We transform this array into a Laravel `Collection` using `new Collection($this->products)`. You may need to adjust the transformation logic based on the structure of your imported product data.
+
+The `WithHeadings` interface is implemented to define the column headings for the Excel file using the `headings` method.
+<input type="text" name="products[][product]" placeholder="Product 1">
+<input type="text" name="products[][price]" placeholder="Price 1">
+<input type="text" name="products[][brand]" placeholder="Brand 1">
+
+<input type="text" name="products[][product]" placeholder="Product 2">
+<input type="text" name="products[][price]" placeholder="Price 2">
+<input type="text" name="products[][brand]" placeholder="Brand 2">
+<!-- Add more input fields if needed -->
+```
+
+The `name="products[][<field_name>]"` attribute ensures that the input values are submitted as an array of products with nested arrays for each field. Adjust the `placeholder` attribute and add more input fields as needed.
