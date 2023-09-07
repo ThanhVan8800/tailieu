@@ -1,0 +1,23 @@
+<VirtualHost *:8000>
+    ServerAdmin webmaster@nkema.ddns.net
+    DocumentRoot "C:\xampp1\htdocs\vitinhnguyenkim\public"
+    ServerName nkema.ddns.net
+    <Directory C:\xampp1\htdocs\vitinhnguyenkim\public>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@ketnoi365.com
+    DocumentRoot "C:\xampp1\htdocs\frontend\FrontendUser\build"
+    ServerName ketnoi365.com
+    ProxyPass / http://localhost:80/
+    ProxyPassReverse / http://localhost:80/
+    <Directory "C:\xampp1\htdocs\frontend\FrontendUser\build">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
