@@ -21,3 +21,15 @@
         Require all granted
     </Directory>
 </VirtualHost>
+
+
+system32 
+C:\Windows\System32\drivers\etc    host
+	::1             localhost
+
+127.0.0.1 ketnoi365.com
+127.0.0.1 nkema.ddns.net
+
+127.0.0.1 nguyenkime.com
+
+
