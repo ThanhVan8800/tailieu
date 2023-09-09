@@ -1,0 +1,34 @@
+create php artisan make:command TestCommand
+
+protected $signature = 'crawl:data {path? : The path to scrape data from}';
+public function handle()
+{
+    $baseUrl = 'https://www.thegioididong.com';
+    // Check if a path argument is provided
+    $path = $this->argument('path') ?? $this->path ?? '/laptop-msi';
+    $url = $baseUrl . $path;
+    // Remaining code for scraping and saving data
+    
+    // Store the path in the class property
+    $this->path = $path;
+}
+public function getCrawlData(Request $request)
+{
+    $path = $request->input('path');
+    Artisan::call('crawl:data', ['path' => $path]);
+    
+    return redirect('/crawl-data')->with('success', 'Data crawled successfully.');
+}
+Route::get('/crawl-data', [CrawlDataController::class, 'getPathForm']);
+Route::post('/crawl-data', [CrawlDataController::class, 'getCrawlData']);
+public function getPathForm()
+{
+    return view('crawl-data-form');
+}
+
+<form method="POST" action="/crawl-data">
+    @csrf
+    <label for="path">Enter the new path:</label>
+    <input type="text" id="path" name="path">
+    <button type="submit">Get Data</button>
+</form>
