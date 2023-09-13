@@ -17,6 +17,8 @@ public function craw(Request $request)
 
         $productNameElements = $driver->findElements(WebDriverBy::className($classNames['name']));
         $productPriceElements = $driver->findElements(WebDriverBy::className($classNames['price']));
+//$productNameElements = $driver->findElements(WebDriverBy::xpath($xpaths['name']));
+       // $productPriceElements = $driver->findElements(WebDriverBy::xpath($xpaths['price']));
 
         for ($i = 0; $i < count($productNameElements); $i++) {
             $data[] = [
