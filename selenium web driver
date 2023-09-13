@@ -1,0 +1,32 @@
+public function craw(Request $request)
+{
+    $key = $request->key;
+    $websites = [
+        'https://www.nguyenkim.com/tim-kiem.html?tu-khoa='.$key.'' => [
+            'name' => 'product-title',
+            'price' => 'product-price',
+        ],
+        // Add more website URLs and their corresponding class names here
+    ];
+
+    $data = [];
+
+    foreach ($websites as $website => $classNames) {
+        $driver = RemoteWebDriver::create('http://localhost:9515', \Facebook\WebDriver\Remote\DesiredCapabilities::chrome());
+        $driver->get($website);
+
+        $productNameElements = $driver->findElements(WebDriverBy::className($classNames['name']));
+        $productPriceElements = $driver->findElements(WebDriverBy::className($classNames['price']));
+
+        for ($i = 0; $i < count($productNameElements); $i++) {
+            $data[] = [
+                'name' => $productNameElements[$i]->getText(),
+                'price' => $productPriceElements[$i]->getText(),
+            ];
+        }
+
+        $driver->quit();
+    }
+
+    return response()->json($data ?? 'Khoong');
+}
