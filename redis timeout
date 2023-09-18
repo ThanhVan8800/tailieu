@@ -1,0 +1,29 @@
+public function list($id)
+    {
+        $redis = Redis::connection();
+        if($redis){
+            $cachedProduct = Redis::get('product_'.$id);
+            if(isset($cachedProduct)){
+                $Product = json_decode($cachedProduct, false);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Fetched from redis',
+                    'data' => $Product,
+                ]);
+            }else {
+                $customTTL = 30; 
+                $Product = Product::find($id);
+                Redis::set('product_' . $id, $Product,'EX',$customTTL);
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Fetched from database',
+                    'data' => $Product,
+                ]);
+            }
+        }else{
+            return response()->json([
+                'status' => false,
+            ]);
+        }
+        
+    }
