@@ -1,0 +1,75 @@
+try {
+    $client = new Client();
+    $slug = $id;
+    if ($sub) {
+        $slug = $slug . "/" . $sub;
+    }
+    $catId = CategoryDesc::where('friendly_url', $slug)->first()->cat_id;
+    
+    // Check Redis cache for the product details
+    $redis = Redis::connection();
+    $cacheKey = "product_" . $catId;
+    $cachedData = $redis->get($cacheKey);
+    
+    if ($cachedData) {
+        // If the cache exists, return the cached data
+        $mergedData = json_decode($cachedData, true);
+    } else {
+        // Fetch product details from the API
+        $response = $client->get("http://mediank.ddns.net/api/category-detail-redis/" . $catId);
+        $listItemImg = json_decode($response->getBody(), true);
+        
+        // Fetch category and product details from the database
+        $listCategory = Category::with('products', 'products.productDesc')->find($catId);
+        $listProduct = Product::with('productDesc')->where('display', 1)->whereRaw('FIND_IN_SET(?,cat_list)', [$catId])->get();
+        
+        // Process category and product data
+        $category = [
+            'catId' => $listCategory->cat_id,
+            'nameCategory' => $listCategory->categoryDesc->cat_name ?? null,
+            'homeCategory' => $listCategory->categoryDesc->home_title ?? null,
+            'friendUrl' => $listCategory->categoryDesc->friendly_url ?? null,
+            'friendTitle' => $listCategory->categoryDesc->friendly_title ?? null,
+            'picture' => $listCategory->picture,
+            'color' => $listCategory->color
+        ];
+        
+        $categoryData = [];
+        foreach ($listProduct as $product) {
+            $encry = Crypt::encryptString($product->product_id);
+            $encryKey = substr($encry, 2);
+            if (isset($listItemImg[$product->product_id])) {
+                $product->picture = $listItemImg[$product->product_id];
+            }
+            $productData = [
+                'productId' => $encryKey ?? null,
+                'productTitle' => $product->productDesc->title ?? null,
+                'picture' => $product->picture,
+                'price' => $product->price ?? null,
+                'priceOld' => $product->price_old ?? null,
+                'friendUrl' => $product->productDesc->friendly_url ?? null,
+                'friendTitle' => $product->productDesc->friendly_title ?? null,
+            ];
+            $categoryData[] = $productData;
+        }
+        
+        $mergedData = [
+            'categoryData' => $category,
+            'product' => $categoryData,
+        ];
+        
+        // Store the data in Redis cache
+        $redis->set($cacheKey, json_encode($mergedData));
+    }
+    
+    return response()->json([
+        'status' => true,
+        'categoryData' => $mergedData['categoryData'],
+        'product' => $mergedData['product'],
+    ]);
+} catch (Exception $e) {
+    return response()->json([
+        'status' => false,
+        'message' => $e->getMessage(),
+    ]);
+}
