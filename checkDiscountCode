@@ -1,0 +1,41 @@
+function checkDiscountCode($couponCode, $orderTotal)
+{
+    // Retrieve the coupon details based on the provided $couponCode
+    $coupon = getCouponDetails($couponCode);
+
+    // Check if the coupon exists
+    if ($coupon) {
+        // Check if the coupon is valid for the current order total
+        if ($orderTotal >= $coupon->GiaTriDonHangToiThieu) {
+            // Check if the coupon is applicable to the order's product category
+            if ($coupon->DanhMucSpChoPhep == 0 || in_array($order->productCategory, $coupon->DanhMucSpChoPhep)) {
+                // Check if the coupon is applicable to the order's brand category
+                if ($coupon->ThuongHieuSPApDung == 0 || in_array($order->brandCategory, $coupon->ThuongHieuSPApDung)) {
+                    // Check if the coupon is applicable to the order's member ID
+                    if ($coupon->mem_id === null || in_array($order->memberId, $coupon->mem_id)) {
+                        // Apply the discount to the order total
+                        $discountedTotal = $orderTotal - $coupon->GiamGia;
+
+                        // Return the discounted total
+                        return $discountedTotal;
+                    } else {
+                        // Coupon does not apply to the member ID
+                        return 'Coupon does not apply to your member ID.';
+                    }
+                } else {
+                    // Coupon does not apply to the brand category
+                    return 'Coupon does not apply to your brand category.';
+                }
+            } else {
+                // Coupon does not apply to the product category
+                return 'Coupon does not apply to your product category.';
+            }
+        } else {
+            // Order total does not meet the minimum requirement
+            return 'Order total does not meet the minimum requirement for this coupon.';
+        }
+    } else {
+        // Coupon does not exist
+        return 'Invalid coupon code.';
+    }
+}
