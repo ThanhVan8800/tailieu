@@ -1,0 +1,60 @@
+public function index()
+{        
+    $now = date('Y-m-d H:i:s');
+    if (auth('member')->user() == null) {
+        return response()->json([
+            'status' => "false",
+            'message' => "not login"
+        ]);
+    }
+    
+    $userId = auth('member')->user()->mem_id;
+    
+    // Check if the user is logged in and if they have a mem_id
+    if ($userId) {
+        $listCouponForYou = Coupon::with('couponDesc')
+            ->orderBy('id', 'DESC')
+            ->where('status_id', 1)
+            ->whereRaw('FIND_IN_SET(?, mem_id)', [$userId])
+            ->get();
+    } else {
+        // If mem_id is 0 (allowing everyone to use 1 coupon), fetch only one coupon
+        $listCouponForYou = Coupon::with('couponDesc')
+            ->orderBy('id', 'DESC')
+            ->where('status_id', 1)
+            ->where('mem_id', 0) // Fetch coupons for all users
+            ->limit(1) // Limit to one coupon
+            ->get();
+    }
+    
+    $dataForYou = [];
+    
+    if (count($listCouponForYou) > 0) {
+        foreach ($listCouponForYou as $coupon) {
+            // ... (your existing code to fetch category and brand information)
+            
+            $dataForYou[] = [
+                'TenCoupon' => $coupon->TenCoupon,
+                'MaPhatHanh' => $coupon->MaPhatHanh,
+                'StartCouponDate' => $coupon->StartCouponDate,
+                'EndCouponDate' => $coupon->EndCouponDate,
+                'DesCoupon' => $coupon->DesCoupon,
+                'GiaTriCoupon' => $coupon->GiaTriCoupon,
+                'MaxValueCoupon' => $coupon->MaxValueCoupon,
+                'SoLanSuDung' => $coupon->SoLanSuDung,
+                'KHSuDungToiDa' => $coupon->KHSuDungToiDa,
+                'SuDungDongThoi' => $coupon->SuDungDongThoi,
+                'DonHangChapNhanTu' => $coupon->DonHangChapNhanTu,
+                'categoryName' => $category->pluck('cat_name'),
+                'friendlyUrlCat' => $category->pluck('friendly_url'),
+                'brandName' => $brand->pluck('title'),
+                'brandFriendlyUrl' => $brand->pluck('friendly_url'),
+                'dataCouponDesc' => $coupon->couponDesc ?? null,
+            ];
+        }
+    }
+
+    return response()->json([
+        'dataForYou' => $dataForYou,
+    ]);
+}
