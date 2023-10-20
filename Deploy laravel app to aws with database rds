@@ -1,1 +1,52 @@
 https://www.youtube.com/watch?v=bOxI2ZObeCE&t=139s
+Một số câu lệnh chạy khi connect ec2
+cd /var -> ls
+cd /www -> ls
+cd /html
+sudo nano .env sudo touch .env, sau đó chạy lại sudo nano .env, vào source copy trong ENV qua config
+
+Cập nhật hệ thống: Đầu tiên, hãy cập nhật hệ thống trên máy chủ EC2 bằng các lệnh sau:
+
+sudo apt update
+sudo apt upgrade
+Cài đặt các yêu cầu hệ thống: Laravel yêu cầu một số công cụ và phần mềm cần được cài đặt. Sử dụng các lệnh sau để cài đặt chúng trên máy chủ EC2:
+sudo apt install -y curl git unzip
+sudo apt install -y php php-cli php-fpm php-mbstring php-xml php-zip
+sudo apt install -y composer
+git clone <repository_url>
+```
+
+Thay thế `<repository_url>` bằng URL của kho lưu trữ của bạn.
+Cài đặt các phụ thuộc: Di chuyển vào thư mục dự án Laravel vừa sao chép và sử dụng Composer để cài đặt các phụ thuộc của dự án:
+
+cd <project_folder>
+composer install
+```
+
+Thay thế `<project_folder>` bằng đường dẫn đến thư mục dự án Laravel.
+Cấu hình môi trường: Laravel yêu cầu một tập tin cấu hình môi trường .env để thiết lập các thông số kết nối cơ sở dữ liệu và cấu hình khác. Sao chép tệp mẫu .env.example và đặt tên thành .env:
+
+cp .env.example .env
+```
+
+Sau đó, sử dụng lệnh sau để tạo khóa ứng dụng Laravel:
+
+````shell
+php artisan key:generate
+```
+Chạy các migration và seed: Nếu dự án Laravel của bạn sử dụng cơ sở dữ liệu, bạn có thể chạy các migration và seed để tạo bảng và dữ liệu mẫu. Sử dụng lệnh sau để chạy migration:
+
+php artisan migrate
+```
+
+Nếu bạn muốn chạy seed cũng, sử dụng lệnh sau:
+
+````shell
+php artisan db:seed
+```
+php artisan serve
+```
+
+Mặc định, máy chủ phát triển sẽ lắng nghe tại `http://localhost:8000`. Bạn có thể truy cập vào địa chỉ này trên trình duyệt để kiểm tra ứng dụng Laravel của bạn.
+
+8P9waQ7GYn5j4jcq9gTV pass git khi clone lên máy chủ
