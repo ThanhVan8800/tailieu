@@ -1,0 +1,107 @@
+Deploying Laravel Web Application, 
+Using AWS EC2 + RDS (Ubuntu, MySQL RDS)
+https://www.youtube.com/watch?v=W2fQFbkEQo0
+
+Deploying Laravel applications the correct way in 10 Steps using AWS.
+In this tutorial we will cover 
+1. Domain Registration,
+2. Elastic IP Address, 
+3. Security Groups, 
+4. Launching RDS instance (For MySQL DB), 
+5. Launching EC2 Linux Ubuntu Instance, 
+6. Requirements Gathering & Preparations
+7. Importing Laravel Project & Setting up folder permissions 
+8. Installing & configuring Apache2, Installing Composer & Dependencies 
+9. SSL Certification using Certbot 
+10. [Optional] CloudWatch & Automated Notifications
+
+#=======================================================#
+Code
+ssh to instance using .pem file 
+ssh -i [pem file] [user]@[ip address]
+
+connect to mysql, show database and create database
+mysql -h production-database.c0wmvggcg6ht.us-east-2.rds.amazonaws.com -P 3306 -u admin -p
+SHOW DATABASES;
+CREATE DATABASE [db-name];
+
+git configure remote & force push
+git init
+git config --global user.email "support@ahtcloud.com" 
+git config --global user.name "Emad Zaamout"
+git remote add origin {bitbucket-repositry-url}
+git push -u -f origin master
+
+git pull repository 
+git pull {bitbucket repository}
+
+ ==== SERVER SET UP ==== 
+sudo apt-get update 
+sudo apt-get dist-upgrade  
+sudo apt-get install apache2 
+sudo apt-get install software-properties-commo
+sudo add-apt-repository ppa:ondrej/php
+sudo apt update
+sudo apt-get install php7.4
+sudo apt install php-curl php-cli php-mbstring git unzip  php7.4-mysql php7.4-dom php7.4-xml php7.4-xmlwriter phpunit php-mbstring php-xml
+sudo apt install python3-certbot-apache
+
+////
+cd /var/www -> ls, ls -la, xóa file html nếu có sudo rm -rf html/
+Có thể tạo thư mục, cấp quyền
+/var/www/ sudo mkdir test
+cd test
+/var/www/test sudo chown -R ubuntu:ubunti . -> sudo chmod 775 ., ls -la
+git init, git pull, ls -la -> nano .env(copy ENV source code )
+ ==== Composer ====
+vist the composer website for Command-line installation
+https://getcomposer.org/download/
+copy các câu lệnh vào chạy
+
+php -r "unlink('composer-setup.php'):"
+sudo mv composer.phar /usr/local/bin/
+[OR] alias composer='/usr/local/bin/composer.phar'
+24:56
+
+
+ ==== laravel set up ====
+php artisan migrate
+php artisan key:generate 
+sudo apt install php-mysql
+ php artisan migrate lỗi, 27:40, ip a
+APACHE 
+cd /etc/apache2 -> ls, ls sites-enabled/ -> sudo a2dissite 000-default.conf, -> sudo systemctl reload apache2.service
+ls sites-enabled/, cd sites-available/, ls -> sudo rm -f 000-default.conf, sudo rm -f default-ssl.conf
+ls /var/log/apache2/ -> sudo nano test.conf
+<VirtualHost *:80>
+    ServerAdmin ...@...com // domain name  test@te.com
+    ServerName .... // test.ca, .com
+        ServerAlias www.test.ca
+    DocumentRoot /var/www/test/public
+        ErrorLog ${APACHE_LOG_DIR}/access.log combined
+    <Directory /var/www/test>
+        Require all granted
+        AllowOverrride All
+      Options Indexes Multiviews FollowSymLinks
+  </Dicrectory>
+</VirtualHost>
+
+sudo a2ensite test.conf
+sudo systemctl reload apaches.service -> cd./.. -> ls sites-enabled
+sudo apt install libapache2-mod-php7.4
+sudo a2enmod php7.4 -> sudo a2enmod rewrite -> sudo systemctl restart apache2.service 
+
+
+
+ ==== Laravel Permissions ====
+sudo chown -R www-data storage
+sudo chown -R www-data storage/framework
+sudo chmod g+w -R storage
+sudo chmod g+w -R storage/framework
+sudo chmod g+w -R storage/framework/sessions/
+sudo chmod g+w -R storage/logs/
+
+/var/www/test   sudo apt install python3-certbot-apache
+sudo certbot 40:00
+
+CloudWatch setup
