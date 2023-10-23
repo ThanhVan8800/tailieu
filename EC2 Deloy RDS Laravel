@@ -51,8 +51,9 @@ cd /var/www -> ls, ls -la, xóa file html nếu có sudo rm -rf html/
 Có thể tạo thư mục, cấp quyền
 /var/www/ sudo mkdir test
 cd test
-/var/www/test sudo chown -R ubuntu:ubunti . -> sudo chmod 775 ., ls -la
+/var/www/test sudo chown -R ubuntu:ubuntu . -> sudo chmod 775 ., ls -la
 git init, git pull, ls -la -> nano .env(copy ENV source code )
+
  ==== Composer ====
 vist the composer website for Command-line installation
 https://getcomposer.org/download/
