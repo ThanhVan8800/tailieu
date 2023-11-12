@@ -9,3 +9,49 @@ L - Liskov Substitution Principle (Nguyên tắc thay thế Liskov): Các đối
 I - Interface Segregation Principle (Nguyên tắc phân tách giao diện): Nên ưu tiên sử dụng nhiều giao diện nhỏ hơn là một giao diện lớn. Nguyên tắc này khuyến khích chia nhỏ các giao diện thành các phần tử nhỏ hơn, giúp tránh việc triển khai các phương thức không cần thiết trong một lớp.
 
 D - Dependency Inversion Principle (Nguyên tắc phụ thuộc đảo ngược): Các module cấp cao không nên phụ thuộc vào các module cấp thấp, cả hai nên phụ thuộc vào trừu tượng. Nguyên tắc này khuyến khích sử dụng các phụ thuộc trừu tượng (interface hay abstract class) để giảm sự ràng buộc giữa các lớp cụ thể.
+
+interface PaymentGateway {
+    public function processPayment($amount);
+}
+
+class StripePaymentGateway implements PaymentGateway {
+    public function processPayment($amount) {
+        // Xử lý thanh toán qua Stripe
+    }
+}
+
+class PayPalPaymentGateway implements PaymentGateway {
+    public function processPayment($amount) {
+        // Xử lý thanh toán qua PayPal
+    }
+}
+
+class OrderController {
+    private $paymentGateway;
+
+    public function __construct(PaymentGateway $paymentGateway) {
+        $this->paymentGateway = $paymentGateway;
+    }
+
+    public function processOrder($amount) {
+        // Xử lý đặt hàng
+
+        // Gửi yêu cầu thanh toán đến PaymentGateway
+        $this->paymentGateway->processPayment($amount);
+
+        // Hoàn tất đặt hàng
+    }
+
+Trong ví dụ này:
+
+PaymentGateway là một giao diện đại diện cho các cổng thanh toán.
+StripePaymentGateway và PayPalPaymentGateway là hai lớp cài đặt giao diện PaymentGateway cho phương thức processPayment.
+OrderController sử dụng phụ thuộc trừu tượng vào PaymentGateway thông qua hàm tạo. Điều này cho phép bạn dễquản lý và thay đổi cổng thanh toán mà không cần sửa đổi mã nguồn của OrderController.
+Điều này tuân thủ nguyên tắc SOLID:
+
+S - OrderController chỉ có một trách nhiệm: xử lý đặt hàng.
+O - OrderController mở rộng được thông qua việc thay đổi cài đặt PaymentGateway mà không cần sửa đổi mã nguồn.
+L - StripePaymentGateway và PayPalPaymentGateway có thể thay thế PaymentGateway mà không làm thay đổi tính đúng đắn của OrderController.
+I - PaymentGateway chỉ định một phương thức processPayment, không có phương thức không cần thiết.
+D - OrderController phụ thuộc vào PaymentGateway thông qua phụ thuộc trừu tượng.
+}
