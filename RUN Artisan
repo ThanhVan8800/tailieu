@@ -1,0 +1,1 @@
+php artisan make:migration add_location_name_to_email_sent_notification --path=Modules/Notification/Database/Migrations
